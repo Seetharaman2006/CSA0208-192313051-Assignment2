@@ -1,19 +1,52 @@
 TASK 4 — TRACE THE COMPILATION PROCESS AND SAFE MACROS
 
 
+#include <stdio.h>
+
+/* Safe macros: parentheses prevent precedence errors */
+#define SQUARE(x) ((x) * (x))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+/* Functions provide alternatives to macros */
+static int square_function(int x)
+{
+    return x * x;
+}
+
+static int max_function(int a, int b)
+{
+    return (a > b) ? a : b;
+}
 
 int main(void)
 {
-    int a = 5, b = 8, i = 3;
+    int a = 5;
+    int b = 8;
+    int i = 3;
 
-    printf("SQUARE(5) = %d\\n", SQUARE(5));
-    printf("MAX(5, 8) = %d\\n", MAX(5, 8));
-    printf("SQUARE(a + 1) = %d\\n", SQUARE(a + 1));
-    printf("Function square_int(6) = %d\\n", square_int(6));
-    printf("Function max_int(5, 8) = %d\\n", max_int(5, 8));
+    printf("TASK 4: COMPILATION PROCESS AND SAFE MACROS\n\n");
 
-    /* Avoid MAX(i++, b): a macro can evaluate an argument more than once. */
-    printf("Function max_int(i++, b) = %d\\n", max_int(i++, b));
-    printf("i after function call = %d\\n", i);
+    /* Test the square macro */
+    printf("SQUARE(5) = %d\n", SQUARE(5));
+    printf("SQUARE(a + 1) = %d\n", SQUARE(a + 1));
+
+    /* Test the maximum macro */
+    printf("MAX(5, 8) = %d\n", MAX(5, 8));
+
+    /* Compare macros with functions */
+    printf("square_function(6) = %d\n", square_function(6));
+    printf("max_function(5, 8) = %d\n", max_function(5, 8));
+
+    /* Demonstrate why side effects in macros are dangerous */
+    printf("\nMacro side-effect example:\n");
+    printf("MAX(i++, b) = %d\n", MAX(i++, b));
+    printf("i after macro = %d\n", i);
+
+    /* Function arguments are evaluated before the call */
+    i = 3;
+    printf("\nFunction alternative:\n");
+    printf("max_function(i++, b) = %d\n", max_function(i++, b));
+    printf("i after function = %d\n", i);
+
     return 0;
 }
