@@ -1,0 +1,107 @@
+TASK 2 — READ AND PRINT DATA CORRECTLY
+
+
+#include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
+
+#define MAX_READING 65535u
+#define FIXED_CHARGE_PAISE 5000LL
+#define RATE2_PAISE 225LL
+#define RATE3_PAISE 450LL
+
+typedef struct {
+    uint32_t units;
+    int64_t total_paise;
+} BillResult;
+
+/* Calculate units consumed, including meter rollover */
+int calculate_units(uint32_t previous,
+                    uint32_t current,
+                    uint32_t *units)
+{
+    if (units == NULL ||
+        previous > MAX_READING ||
+        current > MAX_READING) {
+        return 0;
+    }
+
+    if (current >= previous) {
+        *units = current - previous;
+    } else {
+        *units = (MAX_READING - previous) + 1u + current;
+    }
+
+    return 1;
+}
+
+/* Calculate the electricity bill */
+int calculate_bill(uint32_t units, BillResult *bill)
+{
+    if (bill == NULL) {
+        return 0;
+    }
+
+    int64_t energy = 0;
+
+    /* First 100 units are free */
+    if (units > 100u) {
+        uint32_t second_slab =
+            (units > 200u) ? 100u : units - 100u;
+
+        energy += (int64_t)second_slab * RATE2_PAISE;
+    }
+
+    /* Units above 200 cost Rs 4.50 each */
+    if (units > 200u) {
+        energy += (int64_t)(units - 200u) * RATE3_PAISE;
+    }
+
+    bill->units = units;
+    bill->total_paise = FIXED_CHARGE_PAISE + energy;
+
+    return 1;
+}
+
+/* Print money accurately in rupees and paise */
+void print_money(int64_t paise)
+{
+    printf("Rs %lld.%02lld",
+           (long long)(paise / 100),
+           (long long)(paise % 100));
+}
+
+int main(void)
+{
+    uint32_t units;
+    BillResult bill;
+
+    /* Test 1: Normal meter reading */
+    printf("TASK 2: READ AND PRINT DATA CORRECTLY\n\n");
+
+    printf("Test 1: Normal meter reading\n");
+
+    if (calculate_units(1200u, 1530u, &units)) {
+        printf("Previous reading: 1200\n");
+        printf("Current reading: 1530\n");
+        printf("Units consumed: %" PRIu32 "\n", units);
+    }
+
+    /* Test 2: Meter rollover */
+    printf("\nTest 2: Meter rollover\n");
+
+    if (calculate_units(65400u, 120u, &units)) {
+        printf("Previous reading: 65400\n");
+        printf("Current reading: 120\n");
+        printf("Units consumed: %" PRIu32 "\n", units);
+
+        if (calculate_bill(units, &bill)) {
+            printf("Total bill: ");
+            print_money(bill.total_paise);
+            printf("\n");
+        }
+    }
+
+    return 0;
+}
+

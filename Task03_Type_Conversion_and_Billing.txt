@@ -1,0 +1,73 @@
+TASK 3 — TYPE CONVERSION AND PRECISION
+
+
+#include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
+
+#define FIXED_CHARGE_PAISE 5000LL
+#define SLAB1_UNITS 100U
+#define SLAB2_UNITS 200U
+#define RATE2_PAISE 225LL
+#define RATE3_PAISE 450LL
+
+/* Store money as integer paise to avoid floating-point errors. */
+int64_t calculate_bill(uint32_t units)
+{
+    int64_t energy_charge = 0;
+
+    if (units > SLAB1_UNITS) {
+        uint32_t second_slab = units - SLAB1_UNITS;
+
+        if (second_slab > 100U) {
+            second_slab = 100U;
+        }
+
+        energy_charge += (int64_t)second_slab * RATE2_PAISE;
+    }
+
+    if (units > SLAB2_UNITS) {
+        energy_charge +=
+            (int64_t)(units - SLAB2_UNITS) * RATE3_PAISE;
+    }
+
+    return FIXED_CHARGE_PAISE + energy_charge;
+}
+
+/* Print paise as rupees and paise. */
+void print_money(int64_t paise)
+{
+    printf("Rs %lld.%02lld",
+           (long long)(paise / 100),
+           (long long)(paise % 100));
+}
+
+int main(void)
+{
+    uint32_t tests[] = {0U, 100U, 150U, 200U, 350U};
+
+    size_t count = sizeof(tests) / sizeof(tests[0]);
+
+    printf("TASK 3: TYPE CONVERSION AND PRECISION\n\n");
+
+    for (size_t i = 0; i < count; i++) {
+        int64_t bill = calculate_bill(tests[i]);
+
+        printf("%" PRIu32 " units -> ", tests[i]);
+        print_money(bill);
+        printf("\n");
+    }
+
+    /* Demonstrate integer division. */
+    printf("\nInteger division example:\n");
+    printf("5 / 2 = %d\n", 5 / 2);
+    printf("5.0 / 2.0 = %.2f\n", 5.0 / 2.0);
+
+    /* Demonstrate floating-point precision. */
+    printf("\nFloating-point precision example:\n");
+
+    double amount = 0.1 + 0.2;
+    printf("0.1 + 0.2 = %.17f\n", amount);
+
+    return 0;
+}

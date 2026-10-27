@@ -1,0 +1,19 @@
+TASK 4 — TRACE THE COMPILATION PROCESS AND SAFE MACROS
+
+
+
+int main(void)
+{
+    int a = 5, b = 8, i = 3;
+
+    printf("SQUARE(5) = %d\\n", SQUARE(5));
+    printf("MAX(5, 8) = %d\\n", MAX(5, 8));
+    printf("SQUARE(a + 1) = %d\\n", SQUARE(a + 1));
+    printf("Function square_int(6) = %d\\n", square_int(6));
+    printf("Function max_int(5, 8) = %d\\n", max_int(5, 8));
+
+    /* Avoid MAX(i++, b): a macro can evaluate an argument more than once. */
+    printf("Function max_int(i++, b) = %d\\n", max_int(i++, b));
+    printf("i after function call = %d\\n", i);
+    return 0;
+}
